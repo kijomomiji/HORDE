@@ -25,6 +25,10 @@ pip install poetry
 
 poetry lock
 
+remove every locked packages about 'sklearn' in file 'poetry.lock':
+![image](https://github.com/kijomomiji/HORDE/blob/main/README_graphs/1.png)
+![image](https://github.com/kijomomiji/HORDE/blob/main/README_graphs/2.png)
+
 
 
 
