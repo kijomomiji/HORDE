@@ -17,25 +17,25 @@ Here we give an example based on Ubuntu 20.04 OS.
 
 `conda activate re-execution`
 
-cd HORDE
+`cd HORDE`
 
 ## (2) Install relevant packages
 
-pip install poetry
+`pip install poetry`
 
-poetry lock
+`poetry lock`
 
 remove every locked packages about 'sklearn' in file 'poetry.lock':
 ![image](https://github.com/kijomomiji/HORDE/blob/main/README_graphs/1.png)
 ![image](https://github.com/kijomomiji/HORDE/blob/main/README_graphs/2.png)
 
-install remaining packages with the code: poetry install
+install remaining packages with the code: `poetry install`
 
 install torch with the code (Our GPU is NVIDIA GeForce RTX 3090 GPU):
 
-pip install torch==1.12.0+cu116 torchvision==0.13.0+cu116 torchaudio==0.12.0 --extra-index-url https://download.pytorch.org/whl/cu116
+`pip install torch==1.12.0+cu116 torchvision==0.13.0+cu116 torchaudio==0.12.0 --extra-index-url https://download.pytorch.org/whl/cu116`
 
-pip install protobuf==3.19.0
+`pip install protobuf==3.19.0`
 
 
 
