@@ -13,9 +13,9 @@ Here we give an example based on Ubuntu 20.04 OS.
 
 ## (1) Create a new conda environment with python 3.8.13
 
-conda create -n re-execution python=3.8.13
+'conda create -n re-execution python=3.8.13'
 
-conda activate re-execution
+'conda activate re-execution'
 
 cd HORDE
 
