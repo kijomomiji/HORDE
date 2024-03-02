@@ -1,3 +1,3 @@
 # HORDE: A Hybrid Model for Cardinality Estimation
 
-The basic data 
+The instructions for reproducing experiment results will be given.
