@@ -32,6 +32,7 @@ remove every locked packages about 'sklearn' in file 'poetry.lock':
 install remaining packages with the code: poetry install
 
 install torch with the code (Our GPU is NVIDIA GeForce RTX 3090 GPU):
+
 pip install torch==1.12.0+cu116 torchvision==0.13.0+cu116 torchaudio==0.12.0 --extra-index-url https://download.pytorch.org/whl/cu116
 
 pip install protobuf==3.19.0
