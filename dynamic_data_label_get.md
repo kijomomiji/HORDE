@@ -9,7 +9,9 @@ for ratio in 0.2,0.4,0.6,0.8,1.0;do just append-data-cor 123 forest10 original "
 for ratio in 0.2,0.4,0.6,0.8,1.0;do just append-data-cor 123 power7 original "$ratio";done
 
 for ratio in 0.2,0.4,0.6,0.8,1.0;do just append-data-cor 123 dmv11 original "$ratio";done
+```
 
+```bash
 # update labels
 for ratio in 0.2,0.4,0.6,0.8,1.0;do just wkld-label census13 original+original_cor_"$ratio" base;done
 
