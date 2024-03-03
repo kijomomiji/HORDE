@@ -39,6 +39,23 @@ install torch with the code (Our GPU is NVIDIA GeForce RTX 3090 GPU):
 
 # Part 2：Static experiment
 
+## Download data
+
+Download data from the link: <https://pan.baidu.com/s/1g_wlP-rstUkIKB4WU4_LxQ?pwd=1111>
+
+Unzip the file and place it as: ./HORDE/data
+
+## Accurate module
+
+Construct MRA-T and AC-Forest，and then record their inference time and result:
+
+MRA-T: `just mine-AR_tree_inference census13 original`
+
+AC-Forest: `just mine-tree_inference census13 original`
+
+More commands about accurate module are shown in 
+
+
 
 
 
