@@ -53,13 +53,20 @@ MRA-T: `just mine-AR_tree_inference census13 original`
 
 AC-Forest: `just mine-tree_inference census13 original`
 
-More commands about accurate module are shown [here](./static-accurate-command.md)
+More commands about accurate module are shown [here](./static-accurate-command.md).
 
 ## HORDE performance in static environment
 
 `just mine-CE_plus_sample census13 original base 500 32 100 200`
 
-More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md)
+More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md).
+
+## Baseline models performance in static environment
+
+(Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
+
+All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baselines (Naru, MSCN, DeepDB) are recorded [here](
+
 
 
 
