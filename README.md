@@ -1,4 +1,4 @@
-# The instructions for reproducing experiment results will be given (to be updated).
+# The instructions for result reproduction will be given (to be updated).
 
 
 # HORDE: A Hybrid Model for Cardinality Estimation
