@@ -65,7 +65,7 @@ More commands for HORDE's performance on other datasets are shown [here](./CE_pl
 
 (Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
 
-All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baselines (Naru, MSCN, DeepDB) are recorded [here](
+All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baselines (Naru, MSCN, DeepDB) are recorded [here](./static_baseline_command.md)
 
 
 
