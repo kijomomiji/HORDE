@@ -71,7 +71,7 @@ All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baseli
 
 ## (1) Get dynamic data/label
 
-All the commands for updated data/label with different update ratio (20%, 40%, 60%, 80%, 100%) are shown in [here](./dynamic_data_label_get.md)
+All the commands for getting updated data/label with different update ratio (20%, 40%, 60%, 80%, 100%) are shown in [here](./dynamic_data_label_get.md)
 
 ## (2) 
 
