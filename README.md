@@ -61,7 +61,7 @@ More commands about accurate module are shown [here](./static-accurate-command.m
 
 More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md).
 
-## Baseline models performance in static environment
+## Baseline methods performance in static environment
 
 (Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
 
