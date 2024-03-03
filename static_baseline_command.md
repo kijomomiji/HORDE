@@ -33,4 +33,46 @@ just train-mscn [dataset] [version] [workload] [num_samples] [hid_units] [epochs
 
 just test-mscn [model] [dataset] [version] [workload] [seed]
 
+```bash
+# census
+just train-mscn census13 original base 500 8 100 256 100000 0 123
+just test-mscn original_base-mscn_hid8_sample500_ep100_bs256_100k-123 census13 original base 123
 
+# forest
+just train-mscn forest10 original base 3000 32 100 256 100000 0 123
+just test-mscn original_base-mscn_hid32_sample3000_ep100_bs256_100k-123 forest10 original base 123
+
+# power
+just train-mscn power7 original base 5000 64 100 256 100000 0 123
+just test-mscn original_base-mscn_hid64_sample5000_ep100_bs256_100k-123 power7 original base 123
+
+# dmv
+just train-mscn dmv11 original base 10000 256 100 256 100000 0 123
+just test-mscn original_base-mscn_hid256_sample10000_ep100_bs256_100k-123 dmv11 original base 123
+```
+
+-----------------------------------------------------------------------------------
+
+DeepDB：
+
+just train-deepdb [dataset] [version] [hdf_sample_size] [rdc_threshold] [ratio_min_instance_slice] [sizelimit] [workload] [seed]
+
+just test-deepdb [model] [dataset] [version] [workload] [seed]
+
+```bash
+# census
+just train-deepdb census13 original 1000000 0.4 0.01 0 base 123
+just test-deepdb original-spn_sample48842_rdc0.4_ms0.01-123 census13 original base 123
+
+# forest
+just train-deepdb forest10 original 1000000 0.4 0.005 0 base 123
+just test-deepdb original-spn_sample581012_rdc0.4_ms0.005-123 forest10 original base 123
+
+# power
+just train-deepdb power7 original 10000000 0.3 0.001 0 base 123
+just test-deepdb original-spn_sample2075259_rdc0.3_ms0.001-123 power7 original base 123
+
+# dmv
+just train-deepdb dmv11 original 1000000 0.2 0.001 0 base 123
+just test-deepdb original-spn_sample1000000_rdc0.2_ms0.001-123 dmv11 original base 123
+```
