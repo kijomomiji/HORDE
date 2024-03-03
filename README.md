@@ -67,6 +67,12 @@ More commands for HORDE's performance on other datasets are shown [here](./CE_pl
 
 All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baselines (Naru, MSCN, DeepDB) are recorded [here](./static_baseline_command.md)
 
+# Part 3: Dynamic experiment
+
+## (1) Get dynamic data/label
+
+All the commands for updated data/label with different update ratio (20%, 40%, 60%, 80%, 100%) are shown in [here](./dynamic_data_label_get.md)
+
 
 
 
