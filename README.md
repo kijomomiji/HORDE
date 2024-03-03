@@ -37,6 +37,8 @@ install torch with the code (Our GPU is NVIDIA GeForce RTX 3090 GPU):
 
 `pip install protobuf==3.19.0`
 
+# Part 2：Static experiment
+
 
 
 
