@@ -53,7 +53,7 @@ MRA-T: `just mine-AR_tree_inference census13 original`
 
 AC-Forest: `just mine-tree_inference census13 original`
 
-More commands about accurate module are shown in 
+More commands about accurate module are shown in [here](./static-accurate-command.md)
 
 
 
