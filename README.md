@@ -57,7 +57,7 @@ More commands about accurate module are shown [here](./static-accurate-command.m
 
 ## HORDE performance in static environment
 
-`just mine-CE_plus_sample census13 original base 500 32 100 200 100000`
+`just mine-CE_plus_sample census13 original base 500 32 100 200`
 
 More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md)
 
