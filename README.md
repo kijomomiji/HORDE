@@ -53,10 +53,13 @@ MRA-T: `just mine-AR_tree_inference census13 original`
 
 AC-Forest: `just mine-tree_inference census13 original`
 
-More commands about accurate module are shown in [here](./static-accurate-command.md)
+More commands about accurate module are shown [here](./static-accurate-command.md)
 
 ## HORDE performance in static environment
 
+`just mine-CE_plus_sample census13 original base 500 32 100 200 100000`
+
+More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md)
 
 
 
