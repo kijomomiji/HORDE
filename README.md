@@ -55,13 +55,13 @@ AC-Forest: `just mine-tree_inference census13 original`
 
 More commands about accurate module are shown [here](./static-accurate-command.md).
 
-## HORDE performance in static environment
+## HORDE performance in static scenarios
 
 `just mine-CE_plus_sample census13 original base 500 32 100 200`
 
 More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md).
 
-## Baseline methods performance in static environment
+## Baseline methods performance in static scenarios
 
 (Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
 
@@ -71,9 +71,11 @@ All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baseli
 
 ## (1) Get dynamic data/label
 
-All the commands for getting updated data/label with different update ratio (20%, 40%, 60%, 80%, 100%) are shown in [here](./dynamic_data_label_get.md)
+All the commands for getting updated data/label with different update ratio (20%, 40%, 60%, 80%, 100%) are shown [here](./dynamic_data_label_get.md)
 
-## (2) 
+## (2) HORDE performance in dynamic scenarios
+
+All the commands for training and testing HORDE in dynamic scenarios are shown [here](./CE_plus_sample_update.md)
 
 
 
