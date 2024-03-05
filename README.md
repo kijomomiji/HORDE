@@ -45,7 +45,12 @@ Download data from the link: <https://pan.baidu.com/s/1g_wlP-rstUkIKB4WU4_LxQ?pw
 
 Unzip the file and place it as: ./HORDE/data
 
-## (2) Accurate module
+## (2) Encoding data and queries
+
+All the codes for encoding data and queries are shown in  [here](./static_data_label_get.md)
+
+
+## (3) Accurate module
 
 Construct MRA-T and AC-Forest，and then record their inference time and result:
 
@@ -55,13 +60,13 @@ AC-Forest: `just mine-tree_inference census13 original`
 
 More commands about accurate module are shown [here](./static-accurate-command.md).
 
-## (3) HORDE performance in static scenarios
+## (4) HORDE performance in static scenarios
 
 `just mine-CE_plus_sample census13 original base 500 32 100 200`
 
 More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md).
 
-## (4) Baseline methods performance in static scenarios
+## (5) Baseline methods performance in static scenarios
 
 (Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
 
