@@ -21,6 +21,8 @@ Here we give an example based on Ubuntu 20.04 OS.
 
 ## (2) Install relevant packages
 
+`curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin`
+
 `pip install poetry`
 
 `poetry lock`
