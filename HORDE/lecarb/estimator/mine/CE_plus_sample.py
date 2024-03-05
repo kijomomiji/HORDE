@@ -32,7 +32,7 @@ class Args:
         self.epochs = 200
         self.num_samples = 1000
         self.hid_units = 256
-        self.train_num = 100000
+        # self.train_num = 100000
 
         # overwrite parameters from user
         self.__dict__.update(kwargs)
@@ -552,7 +552,7 @@ def CE_plus_sample(dataset,version,params):
     else:
         with open(addr, 'wb') as f:
             pickle.dump([less_histograms,more_histograms,equal_histograms,distincts], f)
-            print("the vec data has been stored in "+addr)
+            print("the histogram data has been stored in "+addr)
     time2=time.time()
     print("has spent ",time2-time1," seconds to get histograms")
     print_list.append("has spent "+str(time2-time1)+" seconds to get histograms")
@@ -674,6 +674,7 @@ def CE_plus_sample(dataset,version,params):
         valid_query_vec_for_classification=valid_query_vec_for_classification.cuda()
         valid_sample_inputs=valid_sample_inputs.cuda()
     
+    # ACCT:AC-Forest
     addr="./lecarb/estimator/mine/filled_tree_based_structure/"+dataset+"_"+version+".pkl"
     if os.path.exists(addr):
     # if False:
@@ -738,7 +739,7 @@ def CE_plus_sample(dataset,version,params):
             evaluations(prediction,p_labels)
     print("has spent "+str(time.time()-start_time)+" seconds to train model")    
     print_list.append("has spent "+str(time.time()-start_time)+" seconds to train model")
-    model_addr="./lecarb/estimator/mine/trained_model/retrained_model_"+dataset+"_"+version+".pkl"
+    model_addr="./lecarb/estimator/mine/trained_model/model_"+dataset+"_"+version+".pkl"
     with open(model_addr, 'wb') as f:
         pickle.dump(best_model, f)
         print("trained model has been stored in "+model_addr)
@@ -770,6 +771,7 @@ def CE_plus_sample(dataset,version,params):
         eta=0.00022336986404429996 #dmv11
     thres=len(new_data)*eta
 
+    # AR tree: MRA-T
     time_for_AR=0
     addr="./lecarb/estimator/mine/tree_inference_result/AR_tree_"+dataset+"_"+version+".pkl"
     with open(addr, 'rb') as f:
@@ -872,9 +874,6 @@ def tree_inference(dataset,version):
             key = list(table.columns.keys())[i]
             total_num*=(table.columns[key].vocab_size)
 
-    
-        # print(total_num)
-    # attr_clusters.reverse()
 
     # fill ACCT
     addr="./lecarb/estimator/mine/filled_tree_based_structure/"+dataset+"_"+version+".pkl"
@@ -899,57 +898,66 @@ def tree_inference(dataset,version):
             print("ACCT has been stored in "+addr)
 
     # inference
-    # test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
-    test_workload_data=load_data_from_pkl_file("valid_"+dataset+"_"+version+"_workload.pkl")
-    test_query_vec=test_workload_data.query_vec
-    test_query_label=test_workload_data.query_label
-
-    inference_result=[]
-    inference_time=[]
-    for i in range(len(test_query_vec)):
-        time1=time.time()
-        query_clusters=[]
-
-        start_pos=0
-        flag=True
-        for j in attr_clusters:
-            for attr_pos in j:
-                if test_query_vec[i][attr_pos]!=[0]:
-                    flag=False
-                    break
-            if flag==False:
-                break
-            elif flag==True:
-                start_pos+=1
-
-        end_pos=len(attr_clusters)
-        flag=True
-        for j in range(len(attr_clusters)-1,-1,-1):
-            for attr_pos in attr_clusters[j]:
-                if test_query_vec[i][attr_pos]!=[0]:
-                    flag=False
-                    break
-            if flag==False:
-                break
-            elif flag==True:
-                end_pos-=1
-
-
-        for j in attr_clusters[start_pos:end_pos]:
-            query_clusters.append([test_query_vec[i][w] for w in j])
-        
-        max_layer=len(query_clusters)
-
-        global prob_list
-        prob_list=0
-        cal(real_root_nodes[start_pos],query_clusters,0,max_layer)
-        
-        inference_result.append(prob_list)
-        inference_time.append(time.time()-time1)
     
-    # result_addr="./lecarb/estimator/mine/tree_inference_result/"+dataset+"_"+version+".pkl"
-    result_addr="./lecarb/estimator/mine/tree_inference_result/valid_"+dataset+"_"+version+".pkl"
-    with open(result_addr, 'wb') as f:
-        pickle.dump([inference_result,inference_time], f)
-    print("has stored the result in",result_addr)
-    print(len(inference_result))
+    # test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
+    for workload_type in ['valid','test']:
+        if workload_type=='valid':
+            test_workload_data=load_data_from_pkl_file("valid_"+dataset+"_"+version+"_workload.pkl")
+        elif workload_type=='test':
+            test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
+        
+
+        test_query_vec=test_workload_data.query_vec
+
+
+        inference_result=[]
+        inference_time=[]
+        for i in range(len(test_query_vec)):
+            time1=time.time()
+            query_clusters=[]
+
+            start_pos=0
+            flag=True
+            for j in attr_clusters:
+                for attr_pos in j:
+                    if test_query_vec[i][attr_pos]!=[0]:
+                        flag=False
+                        break
+                if flag==False:
+                    break
+                elif flag==True:
+                    start_pos+=1
+
+            end_pos=len(attr_clusters)
+            flag=True
+            for j in range(len(attr_clusters)-1,-1,-1):
+                for attr_pos in attr_clusters[j]:
+                    if test_query_vec[i][attr_pos]!=[0]:
+                        flag=False
+                        break
+                if flag==False:
+                    break
+                elif flag==True:
+                    end_pos-=1
+
+
+            for j in attr_clusters[start_pos:end_pos]:
+                query_clusters.append([test_query_vec[i][w] for w in j])
+            
+            max_layer=len(query_clusters)
+
+            global prob_list
+            prob_list=0
+            cal(real_root_nodes[start_pos],query_clusters,0,max_layer)
+            
+            inference_result.append(prob_list)
+            inference_time.append(time.time()-time1)
+        
+        if workload_type=='valid':
+            result_addr="./lecarb/estimator/mine/tree_inference_result/valid_"+dataset+"_"+version+".pkl"
+        elif workload_type=='test':
+            result_addr="./lecarb/estimator/mine/tree_inference_result/"+dataset+"_"+version+".pkl"
+        with open(result_addr, 'wb') as f:
+            pickle.dump([inference_result,inference_time], f)
+        print("has stored the result in",result_addr)
+        print(len(inference_result))

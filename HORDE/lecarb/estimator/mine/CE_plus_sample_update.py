@@ -30,7 +30,7 @@ class Args:
         self.epochs = 200
         self.num_samples = 1000
         self.hid_units = 256
-        self.train_num = 100000
+        # self.train_num = 100000
 
         # overwrite parameters from user
         self.__dict__.update(kwargs)
@@ -97,100 +97,7 @@ class tuple_index:
                 # have found the index
                 else:
                     p=p.next1[find_pos]
-                    p.child_card_sum+=1
-# class tuple_index:
-#     def __init__(self,value,next1):
-#         self.value=value
-#         self.next1=next1
-
-# class cardinality_estimation_structure:
-#     def __init__(self,cardinality,value_tuple,next1):
-#         self.cardinality=cardinality   
-#         self.value_tuple=value_tuple
-#         self.next1=next1
-        
-#     def add_new_data(self,data_vec,layer_number,attr_clusters,max_layer):
-#         if layer_number>=max_layer:
-#             return
-#         new_tuple=tuple([data_vec[i] for i in attr_clusters[layer_number]])
-        
-#         p=self 
-#         for tuple_number in new_tuple:
-#             if p.next1==None:
-#                 new_one=tuple_index(tuple_number,None)
-#                 p.next1=[new_one]
-#                 p=new_one
-#             else:
-#                 find_pos=search(p.next1,tuple_number)
-#                 # have not found the index
-#                 if find_pos==len(p.next1) or p.next1[find_pos].value!=tuple_number:
-#                     new_one=tuple_index(tuple_number,None)
-#                     p.next1.insert(find_pos,new_one)
-#                     p=new_one
-#                 # have found the index
-#                 else:
-#                     p=p.next1[find_pos]
-                    
-#         if p.next1==None:
-#             p.next1=cardinality_estimation_structure(1,new_tuple,None)
-#             p.next1.add_new_data(data_vec,layer_number+1,attr_clusters,max_layer)
-#         else:
-#             p.next1.cardinality+=1
-#             p.next1.add_new_data(data_vec,layer_number+1,attr_clusters,max_layer)
-
-# def cal(tuple_index_list,screen_list,layer_number,max_layer,c_layer_number,c_max_layer):  
-#     #c_max_layer=len(screen_list)
-#     if c_layer_number>=c_max_layer:
-#         return
-#     max_layer=len(screen_list[c_layer_number])
-#     #print(layer_number,max_layer)
-#     if layer_number>=max_layer:
-#         global prob_list
-#         prob_list[c_layer_number]+=tuple_index_list.cardinality
-#         cal(tuple_index_list.next1,screen_list,0,max_layer,c_layer_number+1,c_max_layer)
-#         return
-#     #screen form: A B (C)
-#     screen=screen_list[c_layer_number][layer_number]
-    
-#     A=screen[0] 
-#     if A==0:
-#         for i in tuple_index_list:
-#             cal(i.next1,screen_list,layer_number+1,max_layer,c_layer_number,c_max_layer)
-#         return
-#     B=screen[1]
-#     if A==1:
-#         find_pos=search(tuple_index_list,B)
-#         if find_pos==len(tuple_index_list) or tuple_index_list[find_pos].value!=B:
-#             return
-#         else:
-#             cal(tuple_index_list[find_pos].next1,screen_list,layer_number+1,max_layer,c_layer_number,c_max_layer)
-#             return
-#     elif A==2:
-#         find_pos=search(tuple_index_list,B)
-#         for i in tuple_index_list[find_pos:]:
-#             cal(i.next1,screen_list,layer_number+1,max_layer,c_layer_number,c_max_layer)
-#         return
-#     elif A==3:
-#         find_pos=search(tuple_index_list,B)
-#         if find_pos!=len(tuple_index_list) and tuple_index_list[find_pos].value==B:
-#             find_pos+=1
-#         for i in tuple_index_list[:find_pos]:
-#             cal(i.next1,screen_list,layer_number+1,max_layer,c_layer_number,c_max_layer)
-#         return
-#     elif A==4:
-#         find_pos_1=search(tuple_index_list,B)
-#         find_pos_2=search(tuple_index_list,screen[2])
-#         if find_pos_2!=len(tuple_index_list) and tuple_index_list[find_pos_2].value==screen[2]:
-#             find_pos_2+=1
-#         if find_pos_2<find_pos_1:
-#             print("there is something wrong about the interval")
-#             return
-#         for i in tuple_index_list[find_pos_1:find_pos_2]:
-#             cal(i.next1,screen_list,layer_number+1,max_layer,c_layer_number,c_max_layer)
-#         return
-#     else:
-#         print("something wrong must've happened"," screen[th][0]==",A)
-#         return      
+                    p.child_card_sum+=1  
 
 def cal(root_node,screen_list,c_layer,max_layer):
     if c_layer>=max_layer:
@@ -530,6 +437,11 @@ def CE_plus_sample_update(dataset,new_version,params):
     # return
 
     print_list=[]
+    time_BND_CN=0
+    time_HORDE=0
+    time_test_BND_CN=0
+    time_test_HORDE=0
+
     version="original"
     table = load_table(dataset,version)
     new_data=load_data_from_pkl_file(dataset+"_"+version+".pkl").data   #class table_data
@@ -609,11 +521,6 @@ def CE_plus_sample_update(dataset,new_version,params):
     valid_query_vec=valid_workload_data.query_vec
     valid_query_label=valid_workload_data.query_label
    
-    # print(query_label[:5])
-    # print(test_query_label[:5])
-    # print(valid_query_label[:5])
-    # print(len(new_data1))
-    # return
     for i in range(len(query_label)):
         query_label[i]/=len(new_data1)
 
@@ -649,12 +556,16 @@ def CE_plus_sample_update(dataset,new_version,params):
         time2=time.time()
         print("has spent",time2-time1,'seconds to update training sample vectors')        
         print_list.append("has spent "+str(time2-time1)+' seconds to update training sample vectors')
+        time_BND_CN+=(time2-time1)
+        time_HORDE+=(time2-time1)
 
         time1=time.time()
         valid_sample_inputs=sample_to_vector(valid_query_vec,sample_data)
         time2=time.time()
         print("has spent",time2-time1,'seconds to update valid sample vectors')        
         print_list.append("has spent "+str(time2-time1)+' seconds to update valid sample vectors')
+        time_BND_CN+=(time2-time1)
+        time_HORDE+=(time2-time1)
 
         time1=time.time()
         test_sample_inputs=sample_to_vector(test_query_vec,sample_data)
@@ -664,6 +575,8 @@ def CE_plus_sample_update(dataset,new_version,params):
         time2=time.time()
         print("has spent",time2-time1,'seconds to update testing sample vectors')        
         print_list.append("has spent "+str(time2-time1)+' seconds to update testing sample vectors')
+        time_test_BND_CN+=(time2-time1)
+        time_test_HORDE+=(time2-time1)
     else:
         print("sample error, you have not finished previous experiments")
         return
@@ -675,18 +588,27 @@ def CE_plus_sample_update(dataset,new_version,params):
     # encode queries
     time1=time.time()
     query_vec_for_classification=query_to_vector(table,query_vec,less_histograms,more_histograms,equal_histograms,len(new_data1))
-    print("has spent ",time.time()-time1," seconds to encode training queries")
-    print_list.append("has spent "+str(time.time()-time1)+" seconds to encode training queries")
+    time2=time.time()
+    print("has spent ",time2-time1," seconds to encode training queries")
+    print_list.append("has spent "+str(time2-time1)+" seconds to encode training queries")
+    time_BND_CN+=(time2-time1)
+    time_HORDE+=(time2-time1)
 
     time1=time.time()
     test_query_vec_for_classification=query_to_vector(table,test_query_vec,less_histograms,more_histograms,equal_histograms,len(new_data1))
-    print("has spent ",time.time()-time1," seconds to encode testing queries")
-    print_list.append("has spent "+str(time.time()-time1)+" seconds to encode testing queries")
+    time2=time.time()
+    print("has spent ",time2-time1," seconds to encode testing queries")
+    print_list.append("has spent "+str(time2-time1)+" seconds to encode testing queries")
+    time_test_BND_CN+=(time2-time1)
+    time_test_HORDE+=(time2-time1)
 
     time1=time.time()
     valid_query_vec_for_classification=query_to_vector(table,valid_query_vec,less_histograms,more_histograms,equal_histograms,len(new_data1))
-    print("has spent ",time.time()-time1," seconds to encode valid queries")
-    print_list.append("has spent "+str(time.time()-time1)+" seconds to encode valid queries")
+    time2=time.time()
+    print("has spent ",time2-time1," seconds to encode valid queries")
+    print_list.append("has spent "+str(time2-time1)+" seconds to encode valid queries")
+    time_BND_CN+=(time2-time1)
+    time_HORDE+=(time2-time1)
 
     query_vec_for_classification=torch.FloatTensor(query_vec_for_classification)
     query_label=torch.FloatTensor(query_label)
@@ -753,6 +675,9 @@ def CE_plus_sample_update(dataset,new_version,params):
     end_time=time.time()
     print("has spent "+str(end_time-start_time)+" seconds to update the tree-based structure")
     print_list.append("has spent "+str(end_time-start_time)+" seconds to update the tree-based structure")
+    time_HORDE+=(end_time-start_time)
+
+    
     new_addr="./lecarb/estimator/mine/filled_tree_based_structure/"+dataset+"_"+new_version+".pkl"
     with open(new_addr, 'wb') as f:
         pickle.dump([real_root_nodes,end_time-start_time], f)
@@ -762,7 +687,6 @@ def CE_plus_sample_update(dataset,new_version,params):
     best_mean_MAE=float("inf")
     best_epoch=-1
     start_time=time.time()
- 
     for epoch in range(args.epochs):
         if epoch%2==1:
             lr*=0.8
@@ -798,9 +722,11 @@ def CE_plus_sample_update(dataset,new_version,params):
             best_mean_MAE=np.mean(MAE)
             best_epoch=epoch
             evaluations(prediction,p_labels)
-    print("has spent "+str(time.time()-start_time)+" seconds to retrain model")    
-    print_list.append("has spent "+str(time.time()-start_time)+" seconds to retrain model")
-    print()
+    end_time=time.time()
+    print("has spent "+str(end_time-start_time)+" seconds to retrain model")    
+    print_list.append("has spent "+str(end_time-start_time)+" seconds to retrain model")
+    time_BND_CN+=(end_time-start_time)
+    time_HORDE+=(end_time-start_time)
 
     start_time=time.time()
     turn_to_precise=0
@@ -809,6 +735,8 @@ def CE_plus_sample_update(dataset,new_version,params):
     inference_time=time.time()-start_time
     info="spent "+str(inference_time)+' seconds to test raw'
     print_list.append(info)
+    time_test_BND_CN+=inference_time
+    time_test_HORDE+=inference_time
 
     
     p_labels=np.round(test_query_label.cpu().detach().numpy()*len(new_data1))
@@ -871,11 +799,18 @@ def CE_plus_sample_update(dataset,new_version,params):
     end_time=time.time()
     print_list.append("has spent "+str(end_time-start_time+inference_time)+" seconds to test Raw & Tree")
     evaluations(prediction,p_labels)
+    time_test_HORDE+=(end_time-start_time)
 
-    print()
-    for i in print_list:
-        print(i)
+    # print()
+    # for i in print_list:
+    #     print(i)
     print("eta:",eta)
+    print("---------------------------------------")
+    print("In conclusion")
+    print("updating BND_CN:",time_BND_CN)
+    print("updating HORDE(BND_CN+AC_Forest):",time_HORDE)
+    print("testing BND_CN:",time_test_BND_CN)
+    print("testing HORDE:",time_test_HORDE)
 
 # get pure leanring model prediction results   
 def find_best_eta(dataset,version):
@@ -1024,54 +959,3 @@ def find_best_eta(dataset,version):
         print("the vec data has been stored in "+addr)
     
     return
-
-    # start_time=time.time()
-    # thres=len(new_data1)*0.001
-    # for i in range(len(prediction)):
-    #     if prediction[i]<thres:
-    #         turn_to_precise+=1
-    #         query_clusters=[]
-    #         start_pos=0
-    #         flag=True
-    #         for j in attr_clusters:
-    #             for attr_pos in j:
-    #                 if test_query_vec[i][attr_pos]!=[0]:
-    #                     flag=False
-    #                     break
-    #             if flag==False:
-    #                 break
-    #             elif flag==True:
-    #                 start_pos+=1
-
-    #         end_pos=len(attr_clusters)
-    #         flag=True
-    #         for j in range(len(attr_clusters)-1,-1,-1):
-    #             for attr_pos in attr_clusters[j]:
-    #                 if test_query_vec[i][attr_pos]!=[0]:
-    #                     flag=False
-    #                     break
-    #             if flag==False:
-    #                 break
-    #             elif flag==True:
-    #                 end_pos-=1
-
-
-    #         for j in attr_clusters[start_pos:end_pos]:
-    #             query_clusters.append([test_query_vec[i][w] for w in j])
-            
-    #         max_layer=len(query_clusters)
-
-    #         global prob_list
-    #         prob_list=0
-    #         # cal(real_root_nodes[start_pos].next1,query_clusters,0,0,0,c_max_layer)
-    #         cal(real_root_nodes[start_pos],query_clusters,0,max_layer)
-
-    #         prediction[i]=prob_list
-            
-    # end_time=time.time()
-    # print_list.append("has spent "+str(end_time-start_time+inference_time)+" seconds to test Raw & Tree")
-    # evaluations(prediction,p_labels)
-
-    # print()
-    # for i in print_list:
-    #     print(i)

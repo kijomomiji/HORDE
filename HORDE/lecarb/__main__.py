@@ -174,6 +174,8 @@ if __name__ == "__main__":
             find_best_eta(dataset,version)
         elif args['--estimator'] == 'AR_tree_inference':
             AR_tree_inference(dataset,version)
+        elif args["--estimator"] == "data_get":
+            find_the_data(dataset,version)
         # elif args['--estimator'] == 'CE_plus_sample_update':
         #     CE_plus_sample_update(dataset,version)
         else:
@@ -200,8 +202,8 @@ if __name__ == "__main__":
             train_lw_nn(seed, dataset, version ,workload, params, sizelimit)
         elif args["--estimator"] == "lw_tree":
             train_lw_tree(seed, dataset, version ,workload, params, sizelimit)
-        elif args["--estimator"] == "data_get":
-            find_the_data(dataset,version,workload,params)
+        # elif args["--estimator"] == "data_get":
+        #     find_the_data(dataset,version,workload,params)
         elif args["--estimator"] == "query_get":
             find_the_query(dataset,version,workload,params)
         elif args["--estimator"] == 'build_tree':

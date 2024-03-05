@@ -72,12 +72,12 @@ class workload_data:
         self.query_label=query_label
 
 
-def  find_the_data(dataset, version, workload, params):
+def find_the_data(dataset, version):
 
-    print(dataset,version,workload)
+    # print(dataset,version,workload)
 
     start_time=time.time()
-    args = Args(**params)
+    # args = Args(**params)
     table = load_table(dataset, version)
 
     value_range_count={}

@@ -552,9 +552,7 @@ def AR_tree_inference(dataset,version):
         max_bound.append(max_value)
     global pos_index
     pos_index=[pow(2,i) for i in range(len(new_data[0]))]
-    # print(restriction)
-    # print(pos_index)
-    # return
+    
 
     
     
@@ -567,60 +565,64 @@ def AR_tree_inference(dataset,version):
             total_num*=(table.columns[key].vocab_size)
         cluster_ranges.append(total_num)
 
-    
-    # inference
-    # test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
-    test_workload_data=load_data_from_pkl_file("valid_"+dataset+"_"+version+"_workload.pkl")
-    test_query_vec=test_workload_data.query_vec
-    test_query_label=test_workload_data.query_label
-
-
-    # vector to restriction range
-    test_restrictions=[]
-    for one_vec in test_query_vec:
-        test_restriction=[]
-        for th in range(len(test_query_vec[0])):
-            if one_vec[th]==[0]:
-                test_restriction.append((min_bound[th],max_bound[th]))
-            elif one_vec[th][0]==1:
-                test_restriction.append((one_vec[th][1],one_vec[th][1]))
-            elif one_vec[th][0]==2:
-                test_restriction.append((one_vec[th][1],max_bound[th]))
-            elif one_vec[th][0]==3:
-                test_restriction.append((min_bound[th],one_vec[th][1]))
-            elif one_vec[th][0]==4:
-                test_restriction.append((one_vec[th][1],one_vec[th][2]))
-        test_restrictions.append(test_restriction)
-
-
     time1=time.time()
     AR_tree=aggregate_R_tree(restriction,list(range(len(new_data))),{})
     AR_tree.split()
     print_list.append("has spent "+str(time.time()-time1)+' seconds to fill AR tree')
+    
+    # inference
+    # test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
+    for workload_type in ['test','valid']:
+        if workload_type=='valid':
+            test_workload_data=load_data_from_pkl_file("valid_"+dataset+"_"+version+"_workload.pkl")
+        elif workload_type=='test':
+            test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
+
+        test_query_vec=test_workload_data.query_vec
+        
+
+        # vector to restriction range
+        test_restrictions=[]
+        for one_vec in test_query_vec:
+            test_restriction=[]
+            for th in range(len(test_query_vec[0])):
+                if one_vec[th]==[0]:
+                    test_restriction.append((min_bound[th],max_bound[th]))
+                elif one_vec[th][0]==1:
+                    test_restriction.append((one_vec[th][1],one_vec[th][1]))
+                elif one_vec[th][0]==2:
+                    test_restriction.append((one_vec[th][1],max_bound[th]))
+                elif one_vec[th][0]==3:
+                    test_restriction.append((min_bound[th],one_vec[th][1]))
+                elif one_vec[th][0]==4:
+                    test_restriction.append((one_vec[th][1],one_vec[th][2]))
+            test_restrictions.append(test_restriction)
 
 
-    total_time=0
-    inference_result=[]
-    inference_time=[]
-    # for restriction_th in range(200):
-    for restriction_th in range(len(test_restrictions)):
-        test_restriction=test_restrictions[restriction_th]
-        global card_count
-        card_count=0
+        total_time=0
+        inference_result=[]
+        inference_time=[]
+        # for restriction_th in range(200):
+        for restriction_th in range(len(test_restrictions)):
+            test_restriction=test_restrictions[restriction_th]
+            global card_count
+            card_count=0
 
-        time1=time.time()
-        AR_infer(AR_tree,test_restriction)
-        spent_time=time.time()-time1
+            time1=time.time()
+            AR_infer(AR_tree,test_restriction)
+            spent_time=time.time()-time1
 
-        total_time=total_time+spent_time
-        inference_result.append(card_count)
-        inference_time.append(spent_time)
-        # print(spent_time,card_count,test_query_label[restriction_th])
-    result_addr="./lecarb/estimator/mine/tree_inference_result/AR_tree_valid_"+dataset+"_"+version+".pkl"
-    with open(result_addr, 'wb') as f:
-        pickle.dump([inference_result,inference_time], f)
-    print("has stored the result in",result_addr)
-    # print(len(inference_result))
+            total_time=total_time+spent_time
+            inference_result.append(card_count)
+            inference_time.append(spent_time)
+            # print(spent_time,card_count,test_query_label[restriction_th])
+        if workload_type=='valid':
+            result_addr="./lecarb/estimator/mine/tree_inference_result/AR_tree_valid_"+dataset+"_"+version+".pkl"
+        elif workload_type=='test':
+            result_addr="./lecarb/estimator/mine/tree_inference_result/AR_tree_"+dataset+"_"+version+".pkl"
+        with open(result_addr, 'wb') as f:
+            pickle.dump([inference_result,inference_time], f)
+        print("has stored the result in",result_addr)
 
     for i in print_list:
         print(i)

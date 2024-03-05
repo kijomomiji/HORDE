@@ -286,10 +286,6 @@ train-deepdb dataset='census13' version='original' hdf_sample_size='1000000' rdc
     poetry run python -m lecarb train -s{{seed}} -d{{dataset}} -v{{version}} -w{{workload}} -edeepdb --params \
         "{'hdf_sample_size': {{hdf_sample_size}}, 'rdc_threshold': {{rdc_threshold}}, 'ratio_min_instance_slice': {{ratio_min_instance_slice}}}" --sizelimit {{sizelimit}}
 
-train-data_get dataset='census13' version='original' workload='base' num_samples='1000' hid_units='16' epochs='200' bs='1024' train_num='100000' sizelimit='0' seed='123':
-    poetry run python -m lecarb train -s{{seed}} -d{{dataset}} -v{{version}} -w{{workload}} -edata_get --params \
-        "{'epochs': {{epochs}}, 'bs': {{bs}}, 'num_samples': {{num_samples}}, 'hid_units': {{hid_units}}, 'train_num': {{train_num}}}" --sizelimit {{sizelimit}}
-
 train-query_get dataset='census13' version='original' workload='base' num_samples='1000' hid_units='16' epochs='200' bs='1024' train_num='100000' sizelimit='0' seed='123':
     poetry run python -m lecarb train -s{{seed}} -d{{dataset}} -v{{version}} -w{{workload}} -equery_get --params \
         "{'epochs': {{epochs}}, 'bs': {{bs}}, 'num_samples': {{num_samples}}, 'hid_units': {{hid_units}}, 'train_num': {{train_num}}}" --sizelimit {{sizelimit}}
@@ -393,9 +389,13 @@ train-multi_table_get_sample_vec dataset='census13' version='original' workload=
         "{'epochs': {{epochs}}, 'bs': {{bs}}, 'num_samples': {{num_samples}}, 'hid_units': {{hid_units}}, 'train_num': {{train_num}}}" --sizelimit {{sizelimit}}
 
 ########### MINE CMD ############
-mine-CE_plus_sample  dataset='census13' version='original' workload='base' num_samples='3000' hid_units='16' epochs='40' bs='1024' train_num='100000':
+mine-data_get dataset='census13' version='original':
+    poetry run python -m lecarb mine -d{{dataset}} -v{{version}} -edata_get
+
+
+mine-CE_plus_sample  dataset='census13' version='original' workload='base' num_samples='3000' hid_units='16' epochs='40' bs='1024':
     poetry run python -m lecarb mine -d{{dataset}} -v{{version}} -w{{workload}} -eCE_plus_sample --params \
-        "{'epochs': {{epochs}}, 'bs': {{bs}}, 'num_samples': {{num_samples}}, 'hid_units': {{hid_units}}, 'train_num': {{train_num}}}" 
+        "{'epochs': {{epochs}}, 'bs': {{bs}}, 'num_samples': {{num_samples}}, 'hid_units': {{hid_units}}}" 
 
 mine-tree_inference dataset='census13' version='original':
     poetry run python -m lecarb mine -d{{dataset}} -v{{version}} -etree_inference
@@ -404,9 +404,9 @@ mine-test_for_different_ita dataset='census13' version='original':
     poetry run python -m lecarb mine -d{{dataset}} -v{{version}} -etest_for_different_ita
 
 
-mine-CE_plus_sample_update dataset='census13' version='original+original_cor_0.2' workload='base' epochs='40' bs='1024' train_num='100000':
+mine-CE_plus_sample_update dataset='census13' version='original+original_cor_0.2' workload='base' epochs='40' bs='1024':
     poetry run python -m lecarb mine -d{{dataset}} -v{{version}} -w{{workload}} -eCE_plus_sample_update --params \
-        "{'epochs': {{epochs}}, 'bs': {{bs}}, 'train_num': {{train_num}}}" 
+        "{'epochs': {{epochs}}, 'bs': {{bs}}}" 
 
 mine-find_best_eta dataset='census13' version='original':
     poetry run python -m lecarb mine -d{{dataset}} -v{{version}} -efind_best_eta
