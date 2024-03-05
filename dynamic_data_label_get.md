@@ -25,13 +25,13 @@ for ratio in 0.2,0.4,0.6,0.8,1.0;do just wkld-label dmv11 original+original_cor_
 # Get updated data and labels for HORDE:
 ``` bash
 # encode data, and store the vectors in ./lacarb/estimator/mine/vec_data/[dataset]_[version].pkl
-for ratio in 0.2,0.4,0.6,0.8,1.0;do just train-data_get census13 original+original_cor_"$ratio";done
+for ratio in 0.2,0.4,0.6,0.8,1.0;do just mine-data_get census13 original+original_cor_"$ratio";done
 
-for ratio in 0.2,0.4,0.6,0.8,1.0;do just train-data_get forest10 original+original_cor_"$ratio";done
+for ratio in 0.2,0.4,0.6,0.8,1.0;do just mine-data_get forest10 original+original_cor_"$ratio";done
 
-for ratio in 0.2,0.4,0.6,0.8,1.0;do just train-data_get power7 original+original_cor_"$ratio";done
+for ratio in 0.2,0.4,0.6,0.8,1.0;do just mine-data_get power7 original+original_cor_"$ratio";done
 
-for ratio in 0.2,0.4,0.6,0.8,1.0;do just train-data_get dmv11 original+original_cor_"$ratio";done
+for ratio in 0.2,0.4,0.6,0.8,1.0;do just mine-data_get dmv11 original+original_cor_"$ratio";done
 ```
 
 ```bash
