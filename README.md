@@ -11,7 +11,13 @@ The codes are developed based on the contributions of Wang et. al.
 
 Here we give an example based on Ubuntu 20.04 OS.
 
-## (1) Create a new conda environment with python 3.8.13
+## (1) Download data
+
+Download data from the link: <https://drive.google.com/file/d/12NNDbKKJyNoYtXBkzMzmMflkQqldOvSH/view?usp=sharing>
+
+Unzip the file and place it as: ./HORDE/data
+
+## (2) Create a new conda environment with python 3.8.13
 
 `conda create -n re-execution python=3.8.13`
 
@@ -19,7 +25,7 @@ Here we give an example based on Ubuntu 20.04 OS.
 
 `cd HORDE`
 
-## (2) Install relevant packages
+## (3) Install relevant packages
 
 `curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /usr/local/bin`
 
@@ -41,18 +47,12 @@ install torch with the code (Our GPU is NVIDIA GeForce RTX 3090 GPU):
 
 # Part 2：Static experiment
 
-## (1) Download data
-
-Download data from the link: <https://drive.google.com/file/d/12NNDbKKJyNoYtXBkzMzmMflkQqldOvSH/view?usp=sharing>
-
-Unzip the file and place it as: ./HORDE/data
-
-## (2) Encoding data and queries
+## (1) Encoding data and queries
 
 All the codes for encoding data and queries are shown in  [here](./static_data_label_get.md)
 
 
-## (3) Accurate module
+## (2) Accurate module
 
 Construct MRA-T and AC-Forest，and then record their inference time and result:
 
@@ -62,13 +62,13 @@ AC-Forest: `just mine-tree_inference census13 original`
 
 More commands about accurate module are shown [here](./static-accurate-command.md).
 
-## (4) HORDE performance in static scenarios
+## (3) HORDE performance in static scenarios
 
 `just mine-CE_plus_sample census13 original base 500 32 100 200`
 
 More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md).
 
-## (5) Baseline methods performance in static scenarios
+## (4) Baseline methods performance in static scenarios
 
 (Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
 
