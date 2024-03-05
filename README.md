@@ -43,7 +43,7 @@ install torch with the code (Our GPU is NVIDIA GeForce RTX 3090 GPU):
 
 ## (1) Download data
 
-Download data from the link: <https://pan.baidu.com/s/1g_wlP-rstUkIKB4WU4_LxQ?pwd=1111>
+Download data from the link: <https://drive.google.com/file/d/12NNDbKKJyNoYtXBkzMzmMflkQqldOvSH/view?usp=sharing>
 
 Unzip the file and place it as: ./HORDE/data
 
