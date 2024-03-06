@@ -623,11 +623,12 @@ def AR_tree_inference(dataset,version):
         with open(result_addr, 'wb') as f:
             pickle.dump([inference_result,inference_time], f)
         print("has stored the result in",result_addr)
+        print_list.append(total_time)
 
     for i in print_list:
         print(i)
 
-    print(total_time)
+    # print(total_time)
 
 
     return
