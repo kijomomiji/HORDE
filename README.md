@@ -86,7 +86,7 @@ All the commands for training and testing HORDE in dynamic scenarios are shown [
 
 ## (3) Baseline methods performance in dynamic scenarios
 
-All the commands for training and testing Naru/MSCN/DeepDB in dynamic scenarios are shown [here](./dynamic_baseline_command).
+All the commands for training and testing Naru/MSCN/DeepDB in dynamic scenarios are shown [here](./dynamic_baseline_command.md).
 
 
 
