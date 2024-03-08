@@ -84,7 +84,7 @@ All the commands for getting updated data/label with different update ratio (20%
 
 All the commands for training and testing HORDE in dynamic scenarios are shown [here](./CE_plus_sample_update.md).
 
-## (3) Baseline methods performance in static scenarios
+## (3) Baseline methods performance in dynamic scenarios
 
 All the commands for training and testing Naru/MSCN/DeepDB in dynamic scenarios are shown [here](./dynamic_baseline_command).
 
