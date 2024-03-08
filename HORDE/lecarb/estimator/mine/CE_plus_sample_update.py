@@ -807,10 +807,10 @@ def CE_plus_sample_update(dataset,new_version,params):
     print("eta:",eta)
     print("---------------------------------------")
     print("In conclusion")
-    print("updating BND_CN:",time_BND_CN)
-    print("updating HORDE(BND_CN+AC_Forest):",time_HORDE)
-    print("testing BND_CN:",time_test_BND_CN)
-    print("testing HORDE:",time_test_HORDE)
+    print("updating BND_CN:",time_BND_CN,'s')
+    print("updating HORDE(BND_CN+AC_Forest):",time_HORDE,'s')
+    print("testing BND_CN:",time_test_BND_CN*1000/10000,'ms/query')
+    print("testing HORDE:",time_test_HORDE*1000/10000,'ms/query')
 
 # get pure leanring model prediction results   
 def find_best_eta(dataset,version):
