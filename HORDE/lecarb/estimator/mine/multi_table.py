@@ -37,9 +37,9 @@ torch.cuda.manual_seed_all(1)
 
 
 def csv_preprocess():
-    ci.to_pickle('./data/imdb/cast_info.pickle')
+    # ci.to_pickle('./data/imdb/cast_info.pickle')
 
-    a=pd.read_pickle('./data/imdb/cast_info.pickle')
+    # a=pd.read_pickle('./data/imdb/cast_info.pickle')
     # print(len(a))
     # print(len(ci))
     # print(ci.loc[[1,2,3],:])
