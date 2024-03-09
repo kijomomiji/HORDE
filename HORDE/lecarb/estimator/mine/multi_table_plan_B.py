@@ -81,50 +81,6 @@ def fill_one(structure,table_name,attr_order,primary_pos,one_tuple):
         new_node=s_node(value,{one_tuple[primary_pos]:1})
         node.insert(th,new_node)
 
-# def infer(restriction_vecs,start_node_list,current_layer,max_layer):
-#     global counts
-#     if current_layer>=max_layer:
-#         counts+=start_node_list
-#         return
-#     if len(start_node_list)==0:
-#         return
-#     restriction_symbol=list(restriction_vecs[current_layer][:3])
-#     restriction_value=list(restriction_vecs[current_layer][3:])
-#     if restriction_symbol==[0,0,0]:
-#         for one_node in start_node_list:
-#             infer(restriction_vecs,one_node.nextone,current_layer+1,max_layer)
-#     elif restriction_symbol==[1,0,0]:
-#         find_th=search(start_node_list,restriction_value[0])
-#         if find_th>=len(start_node_list):
-#             return
-#         elif start_node_list[find_th].value!=restriction_value[0]:
-#             return
-#         infer(restriction_vecs,start_node_list[find_th].nextone,current_layer+1,max_layer)
-    
-#     elif restriction_symbol==[0,1,0]:
-#         find_th=search(start_node_list,restriction_value[0])
-#         if find_th>=len(start_node_list):
-#             return
-#         if start_node_list[find_th].value==restriction_value[0]:
-#             find_th+=1
-#         for one_node in start_node_list[find_th:]:
-#             infer(restriction_vecs,one_node.nextone,current_layer+1,max_layer)
-#     elif restriction_symbol==[0,0,1]:
-#         find_th=search(start_node_list,restriction_value[1])
-#         for one_node in start_node_list[:find_th]:
-#             infer(restriction_vecs,one_node.nextone,current_layer+1,max_layer)
-#     elif restriction_symbol==[0,1,1]:
-#         start_th=search(start_node_list,restriction_value[0])
-#         end_th=search(start_node_list,restriction_value[1])
-#         if start_th>=len(start_node_list):
-#             return
-#         if start_node_list[start_th].value==restriction_value[0]:
-#             start_th+=1 
-#         for one_node in start_node_list[start_th:end_th]:
-#             infer(restriction_vecs,one_node.nextone,current_layer+1,max_layer)
-#     else:
-#         print("something wrong must've happened")
-
 def infer_B(restriction_vecs,node_list,current_layer,max_layer):
     global p_dict
     if current_layer>=max_layer:
@@ -323,8 +279,6 @@ def multi_ac_B():
         all_count_dict[table_name]=copy.deepcopy(p_dict)
 
         print(sum(all_count_dict[table_name].values()))
-    print("this")
-    return
     
     global counts
     for workload in workload_name:
