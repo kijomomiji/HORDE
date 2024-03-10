@@ -1,6 +1,3 @@
-# The instructions for result reproduction will be given (to be updated).
-
-
 # HORDE: A Hybrid Model for Cardinality Estimation
 
 The codes are developed based on the contributions of Wang et. al. 
@@ -88,7 +85,35 @@ All the commands for training and testing HORDE in dynamic scenarios are shown [
 
 All the commands for training and testing Naru/MSCN/DeepDB in dynamic scenarios are shown [here](./dynamic_baseline_command.md).
 
+# Part 4： Multi-table experiment
 
+Getting the performance of HORDE on 3 datasets (Job-light, Scale, Synthetic):
+
+```bash
+just train-train_multi_table
+```
+
+The performance of MSCN is based on its original code, which could be found in <https://github.com/andreaskipf/learnedcardinalities>.
+
+# Code Refrences:
+
+Naru : <https://github.com/naru-project/naru>
+
+MSCN : <https://github.com/andreaskipf/learnedcardinalities>
+
+DeepDB : <https://github.com/DataManagementLab/deepdb-public>
+
+Are we ready for cardinality estimation? : <https://github.com/sfu-db/AreCELearnedYet>
+
+# Forked repos:
+
+(1) Are we ready for cardinality estimation? <https://github.com/sfu-db/AreCELearnedYet>
+
+Changes: Adding codes for HORDE (including BND-CN and AC-Forest), which are mainly stored in the folder `./HORDE/lecarb/estimator/mine`.
+
+(2) MSCN <https://github.com/andreaskipf/learnedcardinalities>
+
+Note that there is no changes. We only use its codes for making MSCN as a baseline model in multi-table experiments.
 
 
 
