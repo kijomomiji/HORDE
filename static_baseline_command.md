@@ -62,17 +62,17 @@ just test-deepdb [model] [dataset] [version] [workload] [seed]
 ```bash
 # census
 just train-deepdb census13 original 1000000 0.4 0.01 0 base 123
-just test-deepdb original-spn_rdc0.4_ms0.01-123 census13 original base 123
+just test-deepdb census13-original-spn_rdc0.4_ms0.01-123 census13 original base 123
 
 # forest
 just train-deepdb forest10 original 1000000 0.4 0.005 0 base 123
-just test-deepdb original-spn_rdc0.4_ms0.005-123 forest10 original base 123
+just test-deepdb forest10-original-spn_rdc0.4_ms0.005-123 forest10 original base 123
 
 # power
 just train-deepdb power7 original 10000000 0.3 0.001 0 base 123
-just test-deepdb original-spn_rdc0.3_ms0.001-123 power7 original base 123
+just test-deepdb power7-original-spn_rdc0.3_ms0.001-123 power7 original base 123
 
 # dmv
 just train-deepdb dmv11 original 1000000 0.2 0.001 0 base 123
-just test-deepdb original-spn_rdc0.2_ms0.001-123 dmv11 original base 123
+just test-deepdb dmv11-original-spn_rdc0.2_ms0.001-123 dmv11 original base 123
 ```
