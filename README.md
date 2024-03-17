@@ -42,6 +42,8 @@ install torch with the code (Our GPU is NVIDIA GeForce RTX 3090 GPU):
 
 `pip install protobuf==3.19.0`
 
+`pip install tables==3.6.1`
+
 # Part 2：Static experiment
 
 ## (1) Encoding data and queries
