@@ -362,322 +362,230 @@ def run_test(dataset: str, version: str, workload: str, estimator: Estimator, ov
     L.info(f"Start loading queryset:{workload} and labels for version {version} of dataset {dataset}...")
     
     # for test or valid
-    load_type='test'
-    # load_type='valid'
-    # only keep test queries
-    queries = load_queryset(dataset, workload)[load_type]
-    labels = load_labels(dataset, version, workload)[load_type]
+    for load_type in ['valid','test']: 
+        queries = load_queryset(dataset, workload)[load_type]
+        labels = load_labels(dataset, version, workload)[load_type]
 
-    if lw_vec is not None:
-        X, gt = lw_vec
-        #  assert isinstance(estimator, LWNN) or isinstance(estimator, LWTree), estimator
-        assert len(X) == len(queries), len(X)
-        assert np.array_equal(np.array([l.cardinality for l in labels]), gt)
-        L.info("Hack for LW's method, use processed vector instead of raw query")
-        queries = X
+        if lw_vec is not None:
+            X, gt = lw_vec
+            #  assert isinstance(estimator, LWNN) or isinstance(estimator, LWTree), estimator
+            assert len(X) == len(queries), len(X)
+            assert np.array_equal(np.array([l.cardinality for l in labels]), gt)
+            L.info("Hack for LW's method, use processed vector instead of raw query")
+            queries = X
 
-    # prepare file path, do not proceed if result already exists
-    result_path = RESULT_ROOT / f"{dataset}"
-    result_path.mkdir(parents=True, exist_ok=True)
-    csv_name=f"{version}-{workload}-{estimator}.csv".replace(";","_")
-    #result_file = result_path / f"{version}-{workload}-{estimator}.csv"
-    result_file = result_path / csv_name
-    print("the saving address is:",result_file)
+        # prepare file path, do not proceed if result already exists
+        result_path = RESULT_ROOT / f"{dataset}"
+        result_path.mkdir(parents=True, exist_ok=True)
+        csv_name=f"{version}-{workload}-{estimator}.csv".replace(";","_")
+        #result_file = result_path / f"{version}-{workload}-{estimator}.csv"
+        result_file = result_path / csv_name
+        print("the saving address is:",result_file)
 
-    # if not overwrite and result_file.is_file():
-    #     L.info(f"Already have the result {result_file}, do not run again!")
-    #     exit(0)
+        # if not overwrite and result_file.is_file():
+        #     L.info(f"Already have the result {result_file}, do not run again!")
+        #     exit(0)
 
-    r = 1.0
-    if version != estimator.table.version:
-        test_row = load_table(dataset, version).row_num
-        r = test_row / estimator.table.row_num
-        L.info(f"Testing on a different data version, need to adjust the prediction according to the row number ratio {r} = {test_row} / {estimator.table.row_num}!")
+        r = 1.0
+        if version != estimator.table.version:
+            test_row = load_table(dataset, version).row_num
+            r = test_row / estimator.table.row_num
+            L.info(f"Testing on a different data version, need to adjust the prediction according to the row number ratio {r} = {test_row} / {estimator.table.row_num}!")
 
-        origin_result_file = RESULT_ROOT / dataset / f"{estimator.table.version}-{workload}-{estimator}.csv"
-        if lazy and origin_result_file.is_file():
-            return lazy_derive(origin_result_file, result_file, r, labels)
+            origin_result_file = RESULT_ROOT / dataset / f"{estimator.table.version}-{workload}-{estimator}.csv"
+            if lazy and origin_result_file.is_file():
+                return lazy_derive(origin_result_file, result_file, r, labels)
 
-    if query_async:
-        L.info("Start test estimator asynchronously...")
-        for i, query in enumerate(queries):
-            estimator.query_async(query, i)
+        if query_async:
+            L.info("Start test estimator asynchronously...")
+            for i, query in enumerate(queries):
+                estimator.query_async(query, i)
 
-        L.info('Waiting for queries to finish...')
-        stats = ray.get([w.get_stats.remote() for w in estimator.workers])
+            L.info('Waiting for queries to finish...')
+            stats = ray.get([w.get_stats.remote() for w in estimator.workers])
 
+            errors = []
+            latencys = []
+            
+            
+            with open(result_file, 'w') as f:
+                writer = csv.writer(f)
+                writer.writerow(['id', 'error', 'predict', 'label', 'dur_ms'])
+                for i, label in enumerate(labels):
+                    r = stats[i%estimator.num_workers][i//estimator.num_workers]
+                    assert i == r.i, r
+                    error = qerror(r.est_card, label.cardinality)
+                    # print(r.est_card,label.cardinality)
+                    errors.append(error)
+                    latencys.append(r.dur_ms)
+                    writer.writerow([i, error, r.est_card, label.cardinality, r.dur_ms])
+
+            L.info(f"Test finished, {np.mean(latencys)} ms/query in average")
+            evaluate_errors(errors)
+            return
+
+        L.info("Start test estimator on test queries...")
         errors = []
         latencys = []
-        
+        cards=[]
+        queries=queries[:]
+        labels=labels[:]
+
+        prediction=[]
+        p_labels=[]
+
+        total_num=load_table(dataset, version).row_num
         
         with open(result_file, 'w') as f:
             writer = csv.writer(f)
             writer.writerow(['id', 'error', 'predict', 'label', 'dur_ms'])
-            for i, label in enumerate(labels):
-                r = stats[i%estimator.num_workers][i//estimator.num_workers]
-                assert i == r.i, r
-                error = qerror(r.est_card, label.cardinality)
-                # print(r.est_card,label.cardinality)
+            for i, data in enumerate(zip(queries, labels)):
+                query, label = data
+                
+                
+                est_card, dur_ms = estimator.query(query)
+
+                # print("est_card:",type(est_card),"   label.cardinality",type(label.cardinality))
+                
+                prediction.append(est_card)
+                p_labels.append(label.cardinality)
+
+                est_card = np.round(r * est_card)
+
+                error = qerror(est_card, label.cardinality)
+                
                 errors.append(error)
-                latencys.append(r.dur_ms)
-                writer.writerow([i, error, r.est_card, label.cardinality, r.dur_ms])
+                cards.append(est_card)
 
-        L.info(f"Test finished, {np.mean(latencys)} ms/query in average")
+                latencys.append(dur_ms)
+                writer.writerow([i, error, est_card, label.cardinality, dur_ms])
+                if (i+1) % 1000 == 0:
+                    L.info(f"{i+1} queries finished")
+        L.info(f"Raw Test finished, {np.mean(latencys)} ms/query in average")
+        prediction=np.array(prediction)
+        # print("prediction",prediction)
+        # print("length  prediction",len(prediction))
+
+
+        if 'naru' in str(estimator):
+            estimator_name='naru'
+        elif 'mscn' in str(estimator):
+            estimator_name='mscn'
+        elif 'spn' in str(estimator):
+            estimator_name='deepdb'
+        else:
+            print('wrong')
+            return
+
+        print(estimator_name)
+        
+        addr="./lecarb/estimator/predict_result/"+estimator_name+"_model_prediction/"+load_type+"_"+dataset+"_"+version+".pkl"
+        
+        with open(addr, 'wb') as f:
+            pickle.dump([prediction,p_labels,total_num], f)
+            print("the vec data has been stored in "+addr)
+
+        print("q_error original model")
+        errors=[]
+        for i in range(len(prediction)):
+            errors.append(qerror(prediction[i],p_labels[i]))
         evaluate_errors(errors)
-        return
-
-    L.info("Start test estimator on test queries...")
-    errors = []
-    latencys = []
-    cards=[]
-    queries=queries[:]
-    labels=labels[:]
-
-    prediction=[]
-    p_labels=[]
-
-    total_num=load_table(dataset, version).row_num
     
-    with open(result_file, 'w') as f:
-        writer = csv.writer(f)
-        writer.writerow(['id', 'error', 'predict', 'label', 'dur_ms'])
-        for i, data in enumerate(zip(queries, labels)):
-            query, label = data
-            
-            
-            est_card, dur_ms = estimator.query(query)
+        MAE=np.absolute(prediction-p_labels)
 
-            # print("est_card:",type(est_card),"   label.cardinality",type(label.cardinality))
-            
-            prediction.append(est_card)
-            p_labels.append(label.cardinality)
+        print("MAE")
+        evaluate_errors(MAE)
 
-            est_card = np.round(r * est_card)
+        MAPE=[]
+        for i in range(len(p_labels)):
+            if p_labels[i]==0:
+                MAPE.append(prediction[i])
+            else:
+                MAPE.append(abs((prediction[i]-p_labels[i])/p_labels[i]))
 
-            error = qerror(est_card, label.cardinality)
-            
-            errors.append(error)
-            cards.append(est_card)
+        MAPE=np.array(MAPE)
+        print("MAPE")
+        evaluate_errors(MAPE)
 
-            latencys.append(dur_ms)
-            writer.writerow([i, error, est_card, label.cardinality, dur_ms])
-            if (i+1) % 1000 == 0:
-                L.info(f"{i+1} queries finished")
-    L.info(f"Raw Test finished, {np.mean(latencys)} ms/query in average")
-    prediction=np.array(prediction)
-    # print("prediction",prediction)
-    # print("length  prediction",len(prediction))
+        print("---------------------------------------------")
+        print("q_error original model+ACCT")
 
+        if load_type=="test":
+            result_addr="./lecarb/estimator/mine/tree_inference_result/"+dataset+"_"+version+".pkl"
+        elif load_type=='valid':
+            continue
+            # result_addr="./lecarb/estimator/mine/tree_inference_result/valid_"+dataset+"_"+version+".pkl"
+        
+        with open(result_addr, 'rb') as f:
+            [inference_result,inference_time] = pickle.load(f)
 
-    if 'naru' in str(estimator):
-        estimator_name='naru'
-    elif 'mscn' in str(estimator):
-        estimator_name='mscn'
-    elif 'spn' in str(estimator):
-        estimator_name='deepdb'
-    else:
-        print('wrong')
-        return
-
-    print(estimator_name)
-    
-    addr="./lecarb/estimator/predict_result/"+estimator_name+"_model_prediction/"+load_type+"_"+dataset+"_"+version+".pkl"
-    
-    with open(addr, 'wb') as f:
-        pickle.dump([prediction,p_labels,total_num], f)
-        print("the vec data has been stored in "+addr)
-
-    print("q_error original model")
-    errors=[]
-    for i in range(len(prediction)):
-        errors.append(qerror(prediction[i],p_labels[i]))
-    evaluate_errors(errors)
-   
-    MAE=np.absolute(prediction-p_labels)
-
-    print("MAE")
-    evaluate_errors(MAE)
-
-    MAPE=[]
-    for i in range(len(p_labels)):
-        if p_labels[i]==0:
-            MAPE.append(prediction[i])
-        else:
-            MAPE.append(abs((prediction[i]-p_labels[i])/p_labels[i]))
-
-    MAPE=np.array(MAPE)
-    print("MAPE")
-    evaluate_errors(MAPE)
-
-    print("---------------------------------------------")
-    print("q_error original model+ACCT")
-
-    if load_type=="test":
-        result_addr="./lecarb/estimator/mine/tree_inference_result/"+dataset+"_"+version+".pkl"
-    elif load_type=='valid':
-        return
-        result_addr="./lecarb/estimator/mine/tree_inference_result/valid_"+dataset+"_"+version+".pkl"
-    
-    with open(result_addr, 'rb') as f:
-        [inference_result,inference_time] = pickle.load(f)
-
-
-  
-    errors=[]
-    thres=None
-    if estimator_name=="mscn":
-        if dataset=='census13':
-            eta=0.0021732061805777433
-        elif dataset=='forest10':
-            eta=0.0
-        elif dataset=='power7':
-            eta=1.0484484391781734e-09
-        elif dataset=='dmv11':
-            eta=0.0004951753423341053
-    elif estimator_name=='deepdb':
-        if dataset=='census13':
-            eta=0.008443939625411012
-        elif dataset=='forest10':
-            eta=0.0
-        elif dataset=='power7':
-            eta=0.00046214956543683133
-        elif dataset=='dmv11':
-            eta=0.0015720891266910683
-    elif estimator_name=='naru':
-        if dataset=='census13':
-            eta=0.0
-        elif dataset=='forest10':
-            eta=3.247180302423658e-12
-        elif dataset=='power7':
-            eta=1.4526335689879488e-10
-        elif dataset=='dmv11':
-            eta=0.0
-
-    # if dataset=='census13':
-    #     eta=0.0011474853376808396 #census13
-    # elif dataset=='forest10':
-    #     eta=0.0003000836881853197 #forest10
-    # elif dataset=='power7':
-    #     eta=0.00025089909708382846 #power7
-    # elif dataset=='dmv11':
-    #     eta=0.00022336986404429996 #dmv11
-    
-    thres=total_num*eta
-    
-    forest_increase_time=[0 for i in range(len(inference_time))]
-    turn_to_precise=0
-    for i in range(len(prediction)):
-        if prediction[i]<thres:
-            turn_to_precise+=1
-            prediction[i]=inference_result[i]
-            latencys[i]+=inference_time[i]*1000 # s->ms
-
-            forest_increase_time[i]+=inference_time[i]*1000 # s->ms
-    print("eta:",eta," turn to precise:",turn_to_precise)
-    L.info(f"forest increase time, {np.mean(forest_increase_time)} ms/query in average")
-    
-    L.info(f"Raw & Tree Test finished, {np.mean(latencys)} ms/query in average")
-
-    for i in range(len(prediction)):
-        errors.append(qerror(prediction[i],p_labels[i]))
-    evaluate_errors(errors)
-   
-    MAE=np.absolute(prediction-p_labels)
-
-    print("MAE")
-    evaluate_errors(MAE)
-
-    MAPE=[]
-    for i in range(len(p_labels)):
-        if p_labels[i]==0:
-            MAPE.append(prediction[i])
-        else:
-            MAPE.append(abs((prediction[i]-p_labels[i])/p_labels[i]))
-
-    # MAPE_1=[]
-    # for i in range(len(p_labels)):
-    #     if prediction[i]==0:
-    #         MAPE_1.append(p_labels[i])
-    #     else:
-    #         MAPE_1.append(abs((prediction[i]-p_labels[i])/prediction[i]))
-
-    MAPE=np.array(MAPE)
-    print("MAPE")
-    evaluate_errors(MAPE)
-
-
-    # MAPE_1=np.array(MAPE_1)
-    # print("MAPE_1")
-    # evaluate_errors(MAPE_1)
-
-
-    return
-    print("q_error original model")
-    evaluate_errors(errors)
-
-    errors_1=[]
-    print("q_error original model+mine0.1")
-    turn_to_precise=0
-    for i in range(len(cards)):
-        if cards[i]<=(total_num*0.1):
-            errors_1.append(1)
-            turn_to_precise+=1
-        else:
-            errors_1.append(errors[i])
-    evaluate_errors(errors_1)
-    print("turn to precise",turn_to_precise)
-
-    errors_2=[]
-    print("q_error original model+mine0.01")
-    turn_to_precise=0
-    for i in range(len(cards)):
-        if cards[i]<=(total_num*0.01):
-            errors_2.append(1)
-            turn_to_precise+=1
-        else:
-            errors_2.append(errors[i])
-    evaluate_errors(errors_2)
-    print("turn to precise",turn_to_precise)
 
     
-    #calculate the time for finding true cardinality
-    table = load_table(dataset, version)
-    for i in range(table.col_num):
-        key=list(table.columns.keys())[i]
-        print(i,table.columns[key].name,table.columns[key].vocab_size,table.columns[key].dtype)
+        errors=[]
+        thres=None
+        if estimator_name=="mscn":
+            if dataset=='census13':
+                eta=0.0021732061805777433
+            elif dataset=='forest10':
+                eta=0.0
+            elif dataset=='power7':
+                eta=1.0484484391781734e-09
+            elif dataset=='dmv11':
+                eta=0.0004951753423341053
+        elif estimator_name=='deepdb':
+            if dataset=='census13':
+                eta=0.008443939625411012
+            elif dataset=='forest10':
+                eta=0.0
+            elif dataset=='power7':
+                eta=0.00046214956543683133
+            elif dataset=='dmv11':
+                eta=0.0015720891266910683
+        elif estimator_name=='naru':
+            if dataset=='census13':
+                eta=0.0
+            elif dataset=='forest10':
+                eta=3.247180302423658e-12
+            elif dataset=='power7':
+                eta=1.4526335689879488e-10
+            elif dataset=='dmv11':
+                eta=0.0
 
-    vec_data=load_data_from_pkl_file(dataset+"_"+version+".pkl")
+        
+        thres=total_num*eta
+        
+        forest_increase_time=[0 for i in range(len(inference_time))]
+        turn_to_precise=0
+        for i in range(len(prediction)):
+            if prediction[i]<thres:
+                turn_to_precise+=1
+                prediction[i]=inference_result[i]
+                latencys[i]+=inference_time[i]*1000 # s->ms
 
-    new_data=vec_data.data
-    attr_name=vec_data.attr_name
-    correlation=vec_data.correlation
-    attr_dict=vec_data.attr_type_dict
+                forest_increase_time[i]+=inference_time[i]*1000 # s->ms
+        print("eta:",eta," turn to precise:",turn_to_precise)
+        L.info(f"forest increase time, {np.mean(forest_increase_time)} ms/query in average")
+        
+        L.info(f"Raw & Tree Test finished, {np.mean(latencys)} ms/query in average")
 
-    attr_clusters=[[i] for i in range(len(new_data[0]))]
-    cluster_ranges=[]
-    for cluster in attr_clusters:
-        total_num=1
-        for i in cluster:
-            key = list(table.columns.keys())[i]
-            total_num*=(table.columns[key].vocab_size)
-        cluster_ranges.append(total_num)
+        for i in range(len(prediction)):
+            errors.append(qerror(prediction[i],p_labels[i]))
+        evaluate_errors(errors)
+    
+        MAE=np.absolute(prediction-p_labels)
 
-    # sort the attr_clusters so that big range clusters are placed behind small ones 
-    attr_clusters = [i for _,i in sorted(zip(cluster_ranges,attr_clusters))]
+        print("MAE")
+        evaluate_errors(MAE)
 
-    real_root_nodes=[]
-    start_time=time.time()
-    for i in range(len(attr_clusters)):
-        real_root_node=fill_the_structure(None,new_data,attr_clusters[i:])
-        real_root_nodes.append(real_root_node)
-    end_time=time.time()
-    print("has spent "+str(end_time-start_time)+" seconds to fill the structure")
+        MAPE=[]
+        for i in range(len(p_labels)):
+            if p_labels[i]==0:
+                MAPE.append(prediction[i])
+            else:
+                MAPE.append(abs((prediction[i]-p_labels[i])/p_labels[i]))
 
-    #test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
-    test_workload_data=load_data_from_pkl_file("test_"+dataset+"_"+version+"_workload.pkl")
-    test_query_vec=test_workload_data.query_vec
-    test_query_label=test_workload_data.query_label
+    
+        MAPE=np.array(MAPE)
+        print("MAPE")
+        evaluate_errors(MAPE)
 
-    # for testing data
-    # probs=test_and_calc_p_value(len(new_data),real_root_nodes,root_nodes,attr_clusters,test_query_vec[:1000],test_query_label[:1000])
-    probs=test_and_calc_p_value(len(new_data),real_root_nodes,attr_clusters,test_query_vec[:],test_query_label[:],cards,errors)
