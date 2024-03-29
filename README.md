@@ -89,7 +89,7 @@ All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baseli
 
 ## (6) Get the best threshold for baseline methods
 
-DeepDB: [here](./HORDE/deepdb+forest.ipynb)  MSCN: [here](./HORDE/mscn+forest.ipynb)  Naru: [here](./HORDE/naru+forest.ipynb)
+[DeepDB](./HORDE/deepdb+forest.ipynb) &nbsp;&nbsp;&nbsp;  [MSCN](./HORDE/mscn+forest.ipynb) &nbsp;&nbsp;&nbsp; [Naru](./HORDE/naru+forest.ipynb)
 
 # Part 3: Dynamic experiment
 
