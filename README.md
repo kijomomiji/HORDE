@@ -67,7 +67,7 @@ More commands about accurate module are shown [here](./static-accurate-command.m
 
 More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md).
 
-## (4) finding the best threshold for HORDE
+## (4) Find the best threshold for HORDE
 
 ```bash
 just mine-find_best_eta census13 original
@@ -86,6 +86,14 @@ After that, run the file './HORDE/eta_loss_curve_fitting.ipynb' to get threshold
 (Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
 
 All the commands for 4 datasets (census13, forest10, power7, dmv11) and 3 baselines (Naru, MSCN, DeepDB) are recorded [here](./static_baseline_command.md).
+
+## (6) Get the best threshold for baseline methods
+
+DeepDB: './HORDE/deepdb+forest.ipynb'
+
+MSCN: './HORDE/mscn+forest.ipynb'
+
+Naru: './HORDE/naru+forest.ipynb'
 
 # Part 3: Dynamic experiment
 
