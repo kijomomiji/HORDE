@@ -81,7 +81,7 @@ just mine-find_best_eta census13 original
 
 After that, run the file './HORDE/eta_loss_curve_fitting.ipynb' to get threshold for each dataset.
 
-## (4) Baseline methods performance in static scenarios
+## (5) Baseline methods performance in static scenarios
 
 (Note that for baseline models, we use the same hyperparameters reported in the work: <https://github.com/sfu-db/AreCELearnedYet>.
 
