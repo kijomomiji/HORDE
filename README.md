@@ -69,7 +69,7 @@ More commands for HORDE's performance on other datasets are shown [here](./CE_pl
 
 ## (4) finding the best threshold for hoRDE
 
-'''bash
+```bash
 just mine-find_best_eta census13 original
 
 just mine-find_best_eta forest10 original
@@ -77,7 +77,7 @@ just mine-find_best_eta forest10 original
 just mine-find_best_eta census13 original
 
 just mine-find_best_eta census13 original
-'''
+```
 
 After that, run the file './HORDE/eta_loss_curve_fitting.ipynb' to get threshold for each dataset.
 
