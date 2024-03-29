@@ -67,16 +67,16 @@ More commands about accurate module are shown [here](./static-accurate-command.m
 
 More commands for HORDE's performance on other datasets are shown [here](./CE_plus_sample.md).
 
-## (4) finding the best threshold for hoRDE
+## (4) finding the best threshold for HORDE
 
 ```bash
 just mine-find_best_eta census13 original
 
 just mine-find_best_eta forest10 original
 
-just mine-find_best_eta census13 original
+just mine-find_best_eta power7 original
 
-just mine-find_best_eta census13 original
+just mine-find_best_eta dmv11 original
 ```
 
 After that, run the file './HORDE/eta_loss_curve_fitting.ipynb' to get threshold for each dataset.
